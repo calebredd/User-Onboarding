@@ -5,7 +5,7 @@ import * as Yup from "yup";
 
 const UserForm = ({ touched, errors, values, status }) => {
   const [users, setUsers] = useState([]);
-
+  console.log(users);
   useEffect(() => {
     if (status) {
       setUsers([...users, status]);
@@ -33,7 +33,7 @@ const UserForm = ({ touched, errors, values, status }) => {
           Terms of Service
           <span className="checkmark" />
         </label>
-        <button>Submit!</button>
+        <button type="submit">Submit!</button>
         {touched.name && errors.name && <p className="error">{errors.name}</p>}
         {touched.password && errors.password && (
           <p className="error">{errors.password}</p>
@@ -46,12 +46,12 @@ const UserForm = ({ touched, errors, values, status }) => {
         )}
       </Form>
       {users.map(user => (
-        <p key={user.id}>{user.email}</p>
+        <p key={user.id}>{user.name}</p>
       ))}
     </div>
   );
 };
-const propsToValuesMap = {
+const FormikLoginForm = withFormik({
   mapPropsToValues({ name, password, email, terms }) {
     return {
       name: name || "",
@@ -63,8 +63,8 @@ const propsToValuesMap = {
   validationSchema: Yup.object().shape({
     user: Yup.string().required("not a good input"),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters!")
-      .required("Password is Required"),
+      .min(6, "Password must be at least 6 characters!"),
+      // .required("Password is Required"),
     email: Yup.string()
       .email("Email is not valid!")
       .required("Email is Required"),
@@ -74,9 +74,10 @@ const propsToValuesMap = {
         "You must agree to the Terms of Service to Proceed",
         value => value === true
       )
-      .required("You must agree to the Terms of Service to Proceed")
+      // .required("You must agree to the Terms of Service to Proceed")
   }),
   handleSubmit(values, { setStatus, resetForm }) {
+    console.log(values);
     axios
       .post("https://reqres.in/api/users", values)
       .then(res => {
@@ -86,6 +87,6 @@ const propsToValuesMap = {
       })
       .catch(err => console.error("handleSubmit: catch: err: ", err));
   }
-};
-
-export default withFormik(propsToValuesMap)(UserForm);
+});
+const LoginF=FormikLoginForm(UserForm);
+export default LoginF;
