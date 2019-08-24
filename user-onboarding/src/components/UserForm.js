@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Field, withFormik } from "formik";
 import axios from "axios";
-import * as Yup from "yup";
+import * as yup from "yup";
 
 const UserForm = ({ errors, touched, values, status }) => {
   const [users, setUsers] = useState([]);
@@ -11,13 +11,15 @@ const UserForm = ({ errors, touched, values, status }) => {
     if (status) {
       setUsers([...users, status]);
     }
-  }, [users, status]);
+  }, [status]);
 
   return (
     <div className="user-form">
       <h1>User Onboarding:</h1>
       <Form>
         <Field component="input" type="text" name="name" placeholder="Name" />
+        <br />
+        {touched.name && errors.name && <p className="error">{errors.name}</p>}
         <br />
         <Field
           component="input"
@@ -26,6 +28,10 @@ const UserForm = ({ errors, touched, values, status }) => {
           placeholder="Password"
         />
         <br />
+        {touched.password && errors.password && (
+          <p className="error">{errors.password}</p>
+        )}
+        <br />
         <Field
           component="input"
           type="email"
@@ -33,27 +39,21 @@ const UserForm = ({ errors, touched, values, status }) => {
           placeholder="Email"
         />
         <br />
+        {touched.email && errors.email && (
+          <p className="error">{errors.email}</p>
+        )}
+        <br />
         <label className="checkbox-container">
           <Field type="checkbox" name="terms" checked={values.terms} />
           Terms of Service
           <span className="checkmark" />
         </label>
-        <br />
-        <button type="submit">Submit!</button>
-        <br />
-        {touched.name && errors.name && <p className="error">{errors.name}</p>}
-        <br />
-        {touched.password && errors.password && (
-          <p className="error">{errors.password}</p>
-        )}
-        <br />
-        {touched.email && errors.email && (
-          <p className="error">{errors.email}</p>
-        )}
-        <br />
         {touched.terms && errors.terms && (
           <p className="error">{errors.terms}</p>
         )}
+        <br />
+        <button type="submit">Submit!</button>
+        <br />
       </Form>
       {users.map(user => (
         <div>
@@ -77,17 +77,17 @@ const formikLoginForm = withFormik({
       terms: terms || false
     };
   },
-  validationSchema: Yup.object().shape({
-    user: Yup.string().required("not a good input"),
-    password: Yup.string().min(6, "Password must be at least 6 characters!"),
+  validationSchema: yup.object().shape({
+    user: yup.string().required("not a good input"),
+    password: yup.string().min(6, "Password must be at least 6 characters!"),
     // .required("Password is Required"),
-    email: Yup.string()
+    email: yup
+      .string()
       .email("Email is not valid!")
       .required("Email is Required"),
-    terms: Yup.bool().oneOf(
-      [true],
-      "You must agree to the Terms of Service to Proceed"
-    )
+    terms: yup
+      .bool()
+      .oneOf([true], "You must agree to the Terms of Service to Proceed")
     // .required("You must agree to the Terms of Service to Proceed")
   }),
   handleSubmit(values, { setStatus, resetForm }) {
